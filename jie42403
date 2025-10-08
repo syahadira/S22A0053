@@ -1,0 +1,7 @@
+echo "# S22A0053" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/syahadira/S22A0053.git
+git push -u origin main
