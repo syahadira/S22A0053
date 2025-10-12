@@ -21,31 +21,19 @@ df = pd.read_csv("arts_faculty_data.csv")
 st.subheader("📄 Data Table")
 st.dataframe(df.head())
 
-# 🧮 Semak kolum Gender
-column_name = "Gender"  # ubah ikut kolum sebenar
+# 🧮 Semak kolum "Gender"
+column_name = "Gender"  # ubah ikut nama kolum sebenar
 if column_name in df.columns:
-    st.subheader("🥧 Gender Distribution (Interactive Pie Chart)")
+    st.subheader("🥧 Gender Distribution (Interactive Pie Chart with Labels)")
 
-    # Kira jumlah setiap gender
+    # Kira jumlah & peratus
     gender_counts = df[column_name].value_counts().reset_index()
     gender_counts.columns = [column_name, "Count"]
+    total = gender_counts["Count"].sum()
+    gender_counts["Percentage"] = (gender_counts["Count"] / total * 100).round(1).astype(str) + "%"
 
-    # Buat pie chart interaktif
-    chart = alt.Chart(gender_counts).mark_arc().encode(
-        theta=alt.Theta(field="Count", type="quantitative"),
-        color=alt.Color(field=column_name, type="nominal"),
-        tooltip=[column_name, "Count"]   # maklumat bila hover
-    ).properties(
-        width=400,
-        height=400
-    )
+    # Arc (potongan pie)
+    pie = alt.Chart(gender_counts).mark_arc().encode(
+        theta=alt.Theta(field="Count", type=
 
-    st.altair_chart(chart, use_container_width=True)
-
-else:
-    st.warning(f"⚠️ Kolum '{column_name}' tidak dijumpai. Kolum sebenar: {list(df.columns)}")
-
-# 📊 Info tambahan
-st.write(f"Total rows: {df.shape[0]}")
-st.write(f"Total columns: {df.shape[1]}")
 
