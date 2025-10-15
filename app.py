@@ -127,7 +127,7 @@ def plot_overall_modality(df):
 
 # --- Layout and Plotting (7 Separated Visualizations with Insights) ---
 
-st.header("1. Gender Demographics")
+# Removed st.header("1. Gender Demographics")
 col_pie, col_bar = st.columns(2)
 with col_pie:
     st.plotly_chart(plot_gender_pie(arts_faculty_df), use_container_width=True)
@@ -142,7 +142,7 @@ with col_bar:
 
 st.markdown("---")
 
-st.header("2. Program Enrollment")
+# Removed st.header("2. Program Enrollment")
 st.plotly_chart(plot_arts_program_distribution(arts_faculty_df), use_container_width=True)
 st.markdown("""
     **Insight (3):** The bar chart reveals the **popularity of different Arts programs**. Some programs have significantly higher student counts than others, leading to an unequal workload across departments. This information is vital for the faculty when deciding where to allocate teaching staff and classroom space.
@@ -150,7 +150,7 @@ st.markdown("""
 
 st.markdown("---")
 
-st.header("3. Academic Performance (GPA)")
+# Removed st.header("3. Academic Performance (GPA)")
 col_ssc, col_hsc = st.columns(2)
 with col_ssc:
     st.plotly_chart(plot_gpa_histogram(arts_faculty_df, 'S.S.C (GPA)', '4'), use_container_width=True)
@@ -165,7 +165,7 @@ with col_hsc:
 
 st.markdown("---")
 
-st.header("4. Class Modality Preferences")
+# Removed st.header("4. Class Modality Preferences")
 col_gender_modality, col_overall_modality = st.columns(2)
 with col_gender_modality:
     st.plotly_chart(plot_modality_by_gender(arts_faculty_df), use_container_width=True)
@@ -177,4 +177,3 @@ with col_overall_modality:
     st.markdown("""
         **Insight (7):** This overall chart clearly identifies the **most popular class modality** among all students. The highest bar indicates the teaching method most widely used or preferred. This allows administrators to focus resources and training on the dominant mode of instruction.
     """)
-
