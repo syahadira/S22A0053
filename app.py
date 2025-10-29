@@ -4,7 +4,7 @@ st.set_page_config(
     page_title="Student Performance"
 )
 
-visualise = st.Page('studentPerformance.py', title='Student Performance', icon=":material/school:")
+visualise = st.Page('StudentPerformance.py', title='Student Performance', icon=":material/school:")
 
 home = st.Page('home.py', title='Homepage', default=True, icon=":material/home:")
 
