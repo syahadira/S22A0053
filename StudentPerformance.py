@@ -66,11 +66,9 @@ def load_and_clean_data(file_path):
 
 
     # 3. Family Income: Categorize (Objective 3)
-    # The user's requested plot categories for Family Income were 'Low Income', 'Medium Income', 'High Income'.
-    # I will map the binning labels to these simplified names.
     if 'Family Income' in df.columns and np.issubdtype(df['Family Income'].dtype, np.number):
         bins = [0, 50000, 150000, df['Family Income'].max() + 1]
-        labels = ['Low Income', 'Medium Income', 'High Income'] # Simplified labels for plotting
+        labels = ['Low Income', 'Medium Income', 'High Income'] 
         df['Family Income Category'] = pd.cut(
             df['Family Income'], bins=bins, labels=labels, right=True, include_lowest=True
         )
@@ -172,7 +170,6 @@ def page_2_study_habits():
     # --- Visualizations ---
     st.subheader("Visualizations")
 
-    # Note: Using 'Study Sessions per Day' for correlation as 'Assignment Time' column is not in the raw data.
     required_cols = ['Study Hours per Day', 'CGPA', 'Attendance_Category', 'Attendance_numeric', 'Study Sessions per Day']
     if all(col in df.columns for col in required_cols):
         
@@ -206,7 +203,8 @@ def page_2_study_habits():
                 title='CGPA Distribution by Attendance Category',
                 color='Attendance_Category',
                 category_orders={'Attendance_Category': order}, # Ensure correct order
-                color_discrete_sequence=px.colors.qualitative.Deep
+                # FIX 1: Replaced px.colors.qualitative.Deep with px.colors.qualitative.D3
+                color_discrete_sequence=px.colors.qualitative.D3 
             )
             fig_box.update_layout(xaxis_title='Attendance Category', yaxis_title='CGPA')
             st.plotly_chart(fig_box, use_container_width=True)
@@ -283,7 +281,8 @@ def page_3_non_academic():
                 title='Average CGPA by Social Media Usage',
                 color='Social Media Category',
                 category_orders={'Social Media Category': ordered_categories}, # Ensure correct order
-                color_discrete_sequence=px.colors.sequential.Deep,
+                # FIX 2: Replaced px.colors.sequential.Deep with px.colors.sequential.Viridis
+                color_discrete_sequence=px.colors.sequential.Viridis,
                 text_auto='.2f'
             )
             fig_bar.update_layout(yaxis_title='Average CGPA', xaxis_title='Social Media Usage (Hours/Day)')
