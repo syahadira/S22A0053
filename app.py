@@ -13,7 +13,6 @@ DATA_FILE = "Students_Performance_data_set.csv"
 def load_and_clean_data(file_path):
     """Loads, renames, cleans, and prepares the student performance data."""
     try:
-        # Load the dataset (try common encodings)
         df = pd.read_csv(file_path, encoding='utf-8')
     except UnicodeDecodeError:
         try:
@@ -38,42 +37,41 @@ def load_and_clean_data(file_path):
 
     # --- Data Cleaning and Categorization ---
 
-    # 1. Attendance: Convert to numeric and categorize
+    # 1. Attendance: Convert to numeric and categorize (Objective 2)
     if 'Attendance' in df.columns:
-        # Coerce non-numeric values (like '100%') to NaN, then fill NaN with mean
         df['Attendance_numeric'] = pd.to_numeric(
             df['Attendance'].astype(str).str.replace('%', ''), errors='coerce'
         )
         if df['Attendance_numeric'].isnull().any():
             df['Attendance_numeric'].fillna(df['Attendance_numeric'].mean(), inplace=True)
             
-        # Create Attendance Category
         bins = [0, 70, 85, 100]
         labels = ['Low (<=70%)', 'Medium (71-85%)', 'High (>85%)']
         df['Attendance_Category'] = pd.cut(
             df['Attendance_numeric'], bins=bins, labels=labels, right=True, include_lowest=True
         )
-        # Handle potential NaNs after cut by filling with the mode and converting to string for Plotly
-        df['Attendance_Category'] = df['Attendance_Category'].astype(str).fillna(df['Attendance_Category'].mode()[0]).astype('category')
+        # Handle potential NaNs after cut by filling with the mode and ensuring it's a category
+        df['Attendance_Category'] = df['Attendance_Category'].astype(str).replace('nan', df['Attendance_Category'].mode()[0]).astype('category')
 
 
-    # 2. Social Media Hours: Categorize
+    # 2. Social Media Hours: Categorize (Objective 3)
     if 'Social Media Hours' in df.columns and np.issubdtype(df['Social Media Hours'].dtype, np.number):
         bins = [-1, 0, 2, 5, df['Social Media Hours'].max() + 1] 
         labels = ['0 hours', '1-2 hours', '3-5 hours', '>5 hours']
         df['Social Media Category'] = pd.cut(
             df['Social Media Hours'], bins=bins, labels=labels, right=True, include_lowest=True
         )
-        df['Social Media Category'] = df['Social Media Category'].astype(str).fillna(df['Social Media Category'].mode()[0]).astype('category')
+        df['Social Media Category'] = df['Social Media Category'].astype(str).replace('nan', df['Social Media Category'].mode()[0]).astype('category')
 
-    # 3. Family Income: Categorize
+
+    # 3. Family Income: Categorize (Objective 3)
     if 'Family Income' in df.columns and np.issubdtype(df['Family Income'].dtype, np.number):
         bins = [0, 50000, 150000, df['Family Income'].max() + 1]
         labels = ['Low Income (<50k)', 'Medium Income (50k-150k)', 'High Income (>150k)']
         df['Family Income Category'] = pd.cut(
             df['Family Income'], bins=bins, labels=labels, right=True, include_lowest=True
         )
-        df['Family Income Category'] = df['Family Income Category'].astype(str).fillna(df['Family Income Category'].mode()[0]).astype('category')
+        df['Family Income Category'] = df['Family Income Category'].astype(str).replace('nan', df['Family Income Category'].mode()[0]).astype('category')
         
     # 4. Fill missing values for core columns (CGPA, Gender) if any
     for col in ['CGPA', 'Gender']:
@@ -150,7 +148,7 @@ def page_1_overview():
     st.subheader("Interpretation/Discussion")
     st.markdown("""
     * **CGPA Distribution:** Rata-rata, **sebilangan besar pelajar menunjukkan prestasi yang kukuh**, dengan CGPA tertinggi berada dalam julat 3.0 hingga 3.7.
-    * **Gender Distribution:** Agihan pelajar lelaki dan perempuan adalah **seimbang**, yang memberikan asas yang baik untuk perbandingan statistik.
+    * **Gender Distribution:** Agihan pelajar lelaki dan perempuan adalah **seimbang**.
     * **Average CGPA by Gender:** Pelajar **perempuan mempunyai purata CGPA yang sedikit lebih tinggi** berbanding pelajar lelaki.
     """)
 
@@ -159,8 +157,8 @@ def page_1_overview():
     st.info(
         """
         **📊 Summary (Objective 1):**
-        Analisis awal menunjukkan **prestasi akademik keseluruhan yang tinggi**, dengan majoriti pelajar mencapai CGPA yang baik. Taburan jantina adalah seimbang (sekitar 50:50).
-        Perbandingan jantina mendedahkan bahawa **pelajar perempuan mencapai purata CGPA yang sedikit lebih tinggi** daripada pelajar lelaki. Ini menunjukkan bahawa faktor jantina mungkin memainkan peranan kecil dalam pencapaian akademik, tetapi secara amnya, pencapaian akademik adalah kuat di seluruh populasi pelajar.
+        Analisis awal menunjukkan **prestasi akademik keseluruhan yang tinggi**, dengan majoriti pelajar mencapai CGPA yang baik. Taburan jantina adalah seimbang.
+        Perbandingan jantina mendedahkan bahawa **pelajar perempuan mencapai purata CGPA yang sedikit lebih tinggi** daripada pelajar lelaki.
         """
     )
 
@@ -204,18 +202,16 @@ def page_2_study_habits():
         # 2. Boxplot: CGPA by Attendance Category
         with col2:
             st.write("**CGPA Distribution by Attendance Category**")
-            # Ensure order
+            # Explicitly set the order for the plot
             order = ['Low (<=70%)', 'Medium (71-85%)', 'High (>85%)']
-            df_plot = df[df['Attendance_Category'].isin(order)].copy()
-            df_plot['Attendance_Category'] = pd.Categorical(df_plot['Attendance_Category'], categories=order, ordered=True)
-            df_plot = df_plot.sort_values('Attendance_Category')
             
             fig_box = px.box(
-                df_plot,
+                df,
                 x='Attendance_Category',
                 y='CGPA',
                 title='CGPA Distribution by Attendance Category',
                 color='Attendance_Category',
+                category_orders={'Attendance_Category': order}, # Ensure correct order
                 color_discrete_sequence=px.colors.qualitative.Deep
             )
             fig_box.update_layout(xaxis_title='Attendance Category', yaxis_title='CGPA')
@@ -226,7 +222,6 @@ def page_2_study_habits():
         correlation_cols = ['Study Hours per Day', 'Attendance_numeric', 'Study Sessions per Day', 'CGPA']
         corr_matrix = df[correlation_cols].corr()
         
-        # Use Plotly Figure Factory for a visually appealing heatmap
         z = corr_matrix.values
         x = corr_matrix.columns.tolist()
         y = corr_matrix.index.tolist()
@@ -263,7 +258,7 @@ def page_2_study_habits():
         """
         **📊 Summary (Objective 2):**
         Keputusan secara muktamad menunjukkan bahawa **disiplin akademik adalah pemacu utama prestasi pelajar**.
-        **Kehadiran kelas yang tinggi** (kolerasi kuat) dan **jumlah jam belajar yang lebih banyak** (kolerasi sederhana hingga kuat) dikaitkan secara langsung dengan CGPA yang lebih tinggi. Ini membuktikan bahawa usaha yang konsisten dan penglibatan kelas adalah strategi yang berkesan untuk kejayaan akademik.
+        **Kehadiran kelas yang tinggi** (kolerasi kuat) dan **jumlah jam belajar yang lebih banyak** (kolerasi sederhana hingga kuat) dikaitkan secara langsung dengan CGPA yang lebih tinggi.
         """
     )
 
@@ -292,11 +287,9 @@ def page_3_non_academic():
         # 1. Average CGPA by Social Media Usage (Bar Chart)
         with col1:
             st.write("**Average CGPA by Social Media Usage Category**")
-            average_cgpa_by_social_media = df.groupby('Social Media Category', observed=False)['CGPA'].mean().reset_index()
-            # Ensure the categories are ordered for the plot
+            # Explicitly set the order for the plot
             ordered_categories = ['0 hours', '1-2 hours', '3-5 hours', '>5 hours']
-            average_cgpa_by_social_media['Social Media Category'] = pd.Categorical(average_cgpa_by_social_media['Social Media Category'], categories=ordered_categories, ordered=True)
-            average_cgpa_by_social_media = average_cgpa_by_social_media.sort_values('Social Media Category')
+            average_cgpa_by_social_media = df.groupby('Social Media Category', observed=False)['CGPA'].mean().reset_index()
 
             fig_bar = px.bar(
                 average_cgpa_by_social_media,
@@ -304,6 +297,7 @@ def page_3_non_academic():
                 y='CGPA',
                 title='Average CGPA by Social Media Usage',
                 color='Social Media Category',
+                category_orders={'Social Media Category': ordered_categories}, # Ensure correct order
                 color_discrete_sequence=px.colors.sequential.Deep,
                 text_auto='.2f'
             )
@@ -328,18 +322,16 @@ def page_3_non_academic():
         
         # 3. Boxplot: CGPA by Family Income Category
         st.write("**CGPA Distribution by Family Income Category**")
-        # Ensure the categories are ordered for the plot
+        # Explicitly set the order for the plot
         ordered_income_categories = ['Low Income (<50k)', 'Medium Income (50k-150k)', 'High Income (>150k)']
-        df_plot_income = df[df['Family Income Category'].isin(ordered_income_categories)].copy()
-        df_plot_income['Family Income Category'] = pd.Categorical(df_plot_income['Family Income Category'], categories=ordered_income_categories, ordered=True)
-        df_plot_income = df_plot_income.sort_values('Family Income Category')
 
         fig_box = px.box(
-            df_plot_income,
+            df,
             x='Family Income Category',
             y='CGPA',
             title='CGPA Distribution by Family Income Category',
             color='Family Income Category',
+            category_orders={'Family Income Category': ordered_income_categories}, # Ensure correct order
             color_discrete_sequence=px.colors.qualitative.T10
         )
         fig_box.update_layout(xaxis_title='Family Income Category', yaxis_title='CGPA')
@@ -349,47 +341,3 @@ def page_3_non_academic():
     # --- Interpretation/Discussion ---
     st.subheader("Interpretation/Discussion")
     st.markdown("""
-    * **Social Media Usage:** Pelajar yang menggunakan media sosial secara sederhana **(1-2 jam) menunjukkan purata CGPA tertinggi**, manakala penggunaan berlebihan (>5 jam) dikaitkan dengan penurunan CGPA.
-    * **Scholarship Status:** Pelajar yang mempunyai **biasiswa mempunyai taburan CGPA yang lebih tinggi** dan kurang sebaran yang rendah.
-    * **Family Income:** Purata **CGPA meningkat secara beransur-ansur mengikut kenaikan kategori pendapatan keluarga**, menunjukkan peranan sokongan sosio-ekonomi.
-    """)
-
-    # --- Summary Box ---
-    st.subheader("Summary Box")
-    st.info(
-        """
-        **📊 Summary (Objective 3):**
-        Faktor bukan akademik didapati mempunyai impak yang signifikan. **Penggunaan media sosial yang berlebihan adalah faktor risiko terbesar**.
-        **Status biasiswa** jelas dikaitkan dengan kecemerlangan akademik, manakala **pendapatan keluarga yang lebih tinggi** menunjukkan kolerasi positif dengan purata CGPA. Ini menekankan keperluan untuk sokongan sosio-ekonomi dan pengurusan masa yang lebih baik untuk pelajar.
-        """
-    )
-
-
-# --- MAIN APPLICATION LOGIC ---
-
-def main():
-    st.set_page_config(
-        page_title="Student Survey Analysis",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
-
-    # Dictionary mapping page names (for sidebar) to their respective functions
-    PAGES = {
-        "Objective 1: Performance Overview 🎓": page_1_overview,
-        "Objective 2: Study Habits & Performance 📚": page_2_study_habits,
-        "Objective 3: Non-Academic Factors 🌍": page_3_non_academic
-    }
-
-    st.sidebar.title("Student Performance Analysis")
-    st.sidebar.markdown("---")
-    
-    # Navigation widget
-    selection = st.sidebar.radio("Go to Objective", list(PAGES.keys()))
-    
-    # Call the selected page function
-    page = PAGES[selection]
-    page()
-
-if __name__ == "__main__":
-    main()
