@@ -203,7 +203,6 @@ def page_2_study_habits():
                 title='CGPA Distribution by Attendance Category',
                 color='Attendance_Category',
                 category_orders={'Attendance_Category': order}, # Ensure correct order
-                # FIX 1: Replaced px.colors.qualitative.Deep with px.colors.qualitative.D3
                 color_discrete_sequence=px.colors.qualitative.D3 
             )
             fig_box.update_layout(xaxis_title='Attendance Category', yaxis_title='CGPA')
@@ -224,7 +223,8 @@ def page_2_study_habits():
             x=x,
             y=y,
             annotation_text=corr_matrix.round(2).values,
-            colorscale='mako',
+            # FIX: Changed 'mako' (Matplotlib colormap) to 'Viridis' (standard Plotly colormap)
+            colorscale='Viridis', 
             showscale=True
         )
         
@@ -281,7 +281,6 @@ def page_3_non_academic():
                 title='Average CGPA by Social Media Usage',
                 color='Social Media Category',
                 category_orders={'Social Media Category': ordered_categories}, # Ensure correct order
-                # FIX 2: Replaced px.colors.sequential.Deep with px.colors.sequential.Viridis
                 color_discrete_sequence=px.colors.sequential.Viridis,
                 text_auto='.2f'
             )
