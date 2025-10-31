@@ -134,19 +134,23 @@ def page_1_overview(df):
             
         st.plotly_chart(fig_line, use_container_width=True)
 
-    # 3. Summary Box (UPDATED)
+    # 3. Summary Box (Simplified English)
     st.subheader("Summary Box")
     st.info(
         """
-        **Key Findings (Objective 1):** The student **CGPA distribution** is centralized, with most students clustering around the average. The **Average CGPA by Gender** often reveals slight differences, indicating which demographic subgroup leads in performance. The **CGPA Across Semesters** trend is relatively stable or shows minor fluctuations, suggesting a consistent level of academic difficulty throughout the program years. This overview establishes the demographic baseline for deeper analysis.
+        **Key Findings (Objective 1):** The **CGPA distribution** shows that most students have grades close to the average. The **Average CGPA by Gender** often shows small differences between male and female students. The **CGPA Across Semesters** is generally stable, meaning the difficulty level hasn't changed much over the years. This gives us a basic look at the students' academic status.
         """
     )
     
-    # 4. Interpretation/Discussion
+    # 4. Interpretation/Discussion (Simplified English - Broken down by chart)
     st.subheader("Interpretation/Discussion")
     st.markdown(
         """
-        The **CGPA distribution** helps assess the overall performance level, indicating if the grades are normally distributed or skewed. The **gender comparison** provides demographic context, showing if external factors are influencing academic achievement based on gender. The **semester trend** visualizes the student learning curve; a steady line suggests the program maintains consistent academic rigor, while a significant drop might signal difficult core courses in later semesters. This foundational overview guides further investigation into specific factors.
+        **1. CGPA Distribution:** This histogram shows where most of the students' grades fall. If the curve is high in the middle, it means most students are performing around the average.
+        
+        **2. Average CGPA by Gender:** This chart helps us check if male and female students perform differently on average. Small differences are normal, but a large gap might suggest a factor affecting one group more than the other.
+        
+        **3. Average CGPA Across Semesters:** This line shows the average performance of students as they move through their course. A flat line means the difficulty stays the same, while a dip might point to a specific, harder semester.
         """
     )
 
@@ -214,19 +218,23 @@ def page_2_study_habits(df):
         fig_heatmap.update_layout(xaxis={'side': 'bottom'})
         st.plotly_chart(fig_heatmap, use_container_width=True)
 
-    # 3. Summary Box (UPDATED)
+    # 3. Summary Box (Simplified English)
     st.subheader("Summary Box")
     st.info(
         """
-        **Key Findings (Objective 2):** Both **Daily Study Hours** and **Class Attendance** show a clear, positive relationship with CGPA. The bar charts demonstrate that students with higher attendance and more dedicated study time achieve better average results. The **Correlation Heatmap** confirms that these factors are statistically significant predictors, often showing a correlation coefficient above 0.5, solidifying the link between academic discipline and successful outcomes.
+        **Key Findings (Objective 2):** Both **Daily Study Hours** and **Class Attendance** clearly show a link to better grades. The charts tell us that students who attend class more often and study more hours get higher average CGPAs. The **Correlation Heatmap** confirms that these two factors are strong predictors, meaning they are very important for academic success.
         """
     )
     
-    # 4. Interpretation/Discussion
+    # 4. Interpretation/Discussion (Simplified English - Broken down by chart)
     st.subheader("Interpretation/Discussion")
     st.markdown(
         """
-        The **CGPA vs. Study Hours** plot reveals an optimal range for studying; while more hours generally means higher CGPA, diminishing returns may be observed at extreme ends. The **CGPA vs. Attendance Level** strongly suggests that class participation is a crucial non-negotiable factor. The **Correlation Heatmap** provides scientific evidence, showing strong positive correlations (close to +1.0) between both attendance and study hours with CGPA, confirming that these are statistically significant drivers of student success.
+        **1. Average CGPA by Daily Study Hours:** This graph usually shows that more study hours lead to better grades. We look for an "ideal" study time where the grades are highest before they level off (or stop improving).
+        
+        **2. Average CGPA by Attendance Level:** This clearly shows how important class attendance is. We expect students with **High Attendance** to have the best average grades, proving that showing up is key to success.
+        
+        **3. Correlation Heatmap:** This map uses numbers to confirm our observations. A number close to **1** shows a strong, positive link. This proves that high study hours and high attendance are scientifically related to a high CGPA.
         """
     )
 
@@ -289,19 +297,23 @@ def page_3_non_academic(df):
         fig_box_income.update_layout(xaxis_title='Income Group', yaxis_title='CGPA')
         st.plotly_chart(fig_box_income, use_container_width=True)
 
-    # 3. Summary Box (UPDATED)
+    # 3. Summary Box (Simplified English)
     st.subheader("Summary Box")
     st.info(
         """
-        **Key Findings (Objective 3):** The analysis on **Social Media Usage** often shows that excessively high hours are associated with a drop in CGPA, indicating a negative impact on performance. Students with **Scholarships** consistently maintain higher average CGPAs, confirming the effectiveness of merit-based incentives. The **Income Group** box plot helps visualize potential disparities, showing the range and median CGPA based on socio-economic background.
+        **Key Findings (Objective 3):** The data suggests that spending **too many hours on social media** might lower a student's CGPA. Students who have **Scholarships** almost always have higher average grades. The **Income Group** chart shows how grades are spread out across different family income levels, helping us see if financial background plays a role.
         """
     )
 
-    # 4. Interpretation/Discussion
+    # 4. Interpretation/Discussion (Simplified English - Broken down by chart)
     st.subheader("Interpretation/Discussion")
     st.markdown(
         """
-        The **Social Media Usage** analysis is important for promoting digital wellness; if higher usage correlates with lower grades, interventions may be needed. The **Scholarship Status** acts as a validation of academic merit, confirming that students receiving aid are top performers. The **Income Group** distribution helps identify potential equity issues; if a strong performance gradient is observed across income levels, it suggests that resource gaps may be influencing academic outcomes. These factors highlight the need for holistic support beyond the classroom.
+        **1. Average CGPA by Daily Social Media Usage:** This chart helps us see if too much screen time is hurting grades. If the average CGPA drops sharply for the "High" usage group, it suggests a need for better digital balance.
+        
+        **2. Average CGPA by Scholarship Status:** This shows whether students receiving merit-based aid perform better than those who do not. We generally expect scholarship recipients to have higher grades, confirming the merit system.
+        
+        **3. CGPA Distribution Across Income Groups:** The box plots let us compare the range of grades across different income groups. If the average grade is much lower for one group, it points to a need for more support or financial resources for those students.
         """
     )
 
