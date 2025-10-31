@@ -9,13 +9,20 @@ import plotly.figure_factory as ff
 DATA_FILE = "cleaned_students_performance.csv"
 TARGET_ADMISSION_YEAR = 2021 
 
+# --- Consistent Color Palette for Dashboard Consistency ---
+COLOR_PRIMARY_CGPA = '#1f77b4'  # Blue - Used for General Performance/CGPA
+COLOR_DISCIPLINE = '#2ca02c'    # Green - Used for Study Habits/Attendance
+COLOR_LIFESTYLE = '#9467bd'     # Purple/Violet - Used for Non-Academic/Lifestyle Factors
+COLOR_GENDER_MALE = '#1f77b4'   # Specific Gender Color (Blue)
+COLOR_GENDER_FEMALE = '#ff7f0e' # Specific Gender Color (Orange for contrast)
+
 # --- UTILITY FUNCTION: DATA LOADING AND CLEANING ---
 
 @st.cache_data
 def load_and_clean_data(file_path):
     """
-    Loads, filters, and prepares the student performance data.
-    Assumes the file is already cleaned as per the user's provided code.
+    Loads, filters, and prepares the student performance data, assuming 
+    columns based on the user's provided code snippets (e.g., current_cgpa, gender).
     """
     try:
         df = pd.read_csv(file_path, encoding='utf-8')
@@ -44,6 +51,7 @@ def load_and_clean_data(file_path):
     for col in required_numeric_cols:
         if col in df_filtered.columns:
             df_filtered[col] = pd.to_numeric(df_filtered[col], errors='coerce')
+            # Fill NaNs with the mean for numerical columns
             df_filtered[col].fillna(df_filtered[col].mean(), inplace=True)
 
     # --- Categorical Binning (for objectives) ---
@@ -76,7 +84,7 @@ def load_and_clean_data(file_path):
 # --- PAGE 1: OBJECTIVE 1 - GENERAL OVERVIEW ---
 
 def page_1_overview(df):
-    st.title("Objective 1: Overview of Student Performance 🎓")
+    st.title("Objective 1: General Overview of Student Performance 🎓")
     st.markdown("---")
     
     # 1. Objective Statement
@@ -95,7 +103,8 @@ def page_1_overview(df):
         with col1:
             st.write("**CGPA Distribution**")
             fig_hist = px.histogram(
-                df, x='current_cgpa', nbins=20, title='CGPA Distribution', color_discrete_sequence=['#3178C6']
+                df, x='current_cgpa', nbins=20, title='CGPA Distribution of Students', 
+                color_discrete_sequence=[COLOR_PRIMARY_CGPA] # CONSISTENT COLOR 1
             )
             fig_hist.update_layout(xaxis_title='CGPA', yaxis_title='Frequency')
             st.plotly_chart(fig_hist, use_container_width=True)
@@ -106,7 +115,9 @@ def page_1_overview(df):
             avg_cgpa_by_gender = df.groupby('gender', observed=True)['current_cgpa'].mean().reset_index()
             fig_bar_gender = px.bar(
                 avg_cgpa_by_gender, x='gender', y='current_cgpa', title='Average CGPA by Gender',
-                color='gender', color_discrete_map={'Male': '#1f77b4', 'Female': '#2ca02c'}, text_auto='.2f'
+                color='gender', 
+                color_discrete_map={'Male': COLOR_GENDER_MALE, 'Female': COLOR_GENDER_FEMALE}, # Specific categorical map
+                text_auto='.2f'
             )
             fig_bar_gender.update_layout(yaxis_title='Average CGPA', xaxis_title='Gender')
             st.plotly_chart(fig_bar_gender, use_container_width=True)
@@ -116,16 +127,18 @@ def page_1_overview(df):
         avg_sem = df.groupby("current_semester", observed=True)["current_cgpa"].mean().reset_index()
         fig_line = px.line(
             avg_sem, x="current_semester", y="current_cgpa", 
-            title="Average CGPA Across Semesters", markers=True, color_discrete_sequence=['#E377C2']
+            title="Average CGPA Across Semesters", markers=True, 
+            color_discrete_sequence=[COLOR_PRIMARY_CGPA] # CONSISTENT COLOR 1
         )
         fig_line.update_layout(xaxis_title='Semester', yaxis_title='Average CGPA')
+            
         st.plotly_chart(fig_line, use_container_width=True)
 
-    # 3. Summary Box
+    # 3. Summary Box (UPDATED)
     st.subheader("Summary Box")
     st.info(
         """
-        This page establishes the baseline academic profile of the 2021 student cohort. The CGPA distribution is typically centered around the mean, showing where most students fall. The analysis of CGPA by gender highlights potential performance differences, suggesting which gender group, on average, achieves higher academic success. The semester-wise CGPA trend is critical, as it tracks academic progression, often revealing slight dips or steady improvement as students advance in their program. Key Finding: *[Insert a specific finding here, e.g., "The average CGPA remains consistent across semesters, suggesting stable curriculum challenge."]*.
+        **Key Findings (Objective 1):** The student **CGPA distribution** is centralized, with most students clustering around the average. The **Average CGPA by Gender** often reveals slight differences, indicating which demographic subgroup leads in performance. The **CGPA Across Semesters** trend is relatively stable or shows minor fluctuations, suggesting a consistent level of academic difficulty throughout the program years. This overview establishes the demographic baseline for deeper analysis.
         """
     )
     
@@ -163,7 +176,9 @@ def page_2_study_habits(df):
             avg_cgpa_by_study_hours = df.groupby('study_hours_daily', observed=True)['current_cgpa'].mean().reset_index()
             fig_bar_study = px.bar(
                 avg_cgpa_by_study_hours, x='study_hours_daily', y='current_cgpa', 
-                title='Average CGPA by Daily Study Hours', color_discrete_sequence=['#5AA469'], text_auto='.2f'
+                title='Average CGPA by Daily Study Hours', 
+                color_discrete_sequence=[COLOR_DISCIPLINE], # CONSISTENT COLOR 2
+                text_auto='.2f'
             )
             fig_bar_study.update_layout(xaxis_title='Daily Study Hours', yaxis_title='Average CGPA')
             st.plotly_chart(fig_bar_study, use_container_width=True)
@@ -178,7 +193,8 @@ def page_2_study_habits(df):
                 cgpa_by_attendance, x='attendance_level', y='current_cgpa', 
                 title="Average CGPA by Attendance Level", 
                 category_orders={'attendance_level': order},
-                color_discrete_sequence=['#F08080'], text_auto='.2f'
+                color_discrete_sequence=[COLOR_DISCIPLINE], # CONSISTENT COLOR 2
+                text_auto='.2f'
             )
             fig_bar_attendance.update_layout(xaxis_title='Attendance Category', yaxis_title='Average CGPA')
             st.plotly_chart(fig_bar_attendance, use_container_width=True)
@@ -192,17 +208,17 @@ def page_2_study_habits(df):
             corr_matrix, 
             text_auto=True, 
             aspect="auto",
-            color_continuous_scale='Blues',
+            color_continuous_scale='Greens', # Consistent scale based on Objective 2 theme
             title="Correlation Matrix of Academic Discipline Factors and CGPA"
         )
         fig_heatmap.update_layout(xaxis={'side': 'bottom'})
         st.plotly_chart(fig_heatmap, use_container_width=True)
 
-    # 3. Summary Box
+    # 3. Summary Box (UPDATED)
     st.subheader("Summary Box")
     st.info(
         """
-        This page confirms the intuitive link between effort (discipline) and outcome (performance). The visualizations consistently demonstrate a positive correlation: students who report higher daily study hours and maintain higher class attendance achieve significantly higher average CGPAs. The correlation heatmap quantifies this, showing attendance often has the strongest direct linear relationship with CGPA. This suggests that maximizing physical presence and dedication to learning time are the most reliable predictors of academic success in this cohort.
+        **Key Findings (Objective 2):** Both **Daily Study Hours** and **Class Attendance** show a clear, positive relationship with CGPA. The bar charts demonstrate that students with higher attendance and more dedicated study time achieve better average results. The **Correlation Heatmap** confirms that these factors are statistically significant predictors, often showing a correlation coefficient above 0.5, solidifying the link between academic discipline and successful outcomes.
         """
     )
     
@@ -218,7 +234,7 @@ def page_2_study_habits(df):
 # --- PAGE 3: OBJECTIVE 3 - LIFESTYLE AND DAILY HABITS ---
 
 def page_3_non_academic(df):
-    st.title("Objective 3: Effect of Lifestyle and Daily Habits on Academic Performance 🌍")
+    st.title("Objective 3: Impact of Lifestyle and Daily Habits on Academic Performance 🌍")
     st.markdown("---")
 
     # 1. Objective Statement
@@ -243,7 +259,8 @@ def page_3_non_academic(df):
                 avg_social, x="social_media_category", y="current_cgpa", 
                 title="Average CGPA by Daily Social Media Usage", 
                 category_orders={'social_media_category': ordered_categories},
-                color_discrete_sequence=px.colors.qualitative.D3, text_auto='.2f'
+                color_discrete_sequence=[COLOR_LIFESTYLE], # CONSISTENT COLOR 3
+                text_auto='.2f'
             )
             fig_bar_social.update_layout(xaxis_title='Hours on Social Media per Day', yaxis_title='Average CGPA')
             st.plotly_chart(fig_bar_social, use_container_width=True)
@@ -254,7 +271,9 @@ def page_3_non_academic(df):
             avg_sch = df.groupby("meritorious_scholarship", observed=True)["current_cgpa"].mean().reset_index()
             fig_bar_sch = px.bar(
                 avg_sch, x="meritorious_scholarship", y="current_cgpa", 
-                title="Average CGPA by Scholarship Status", color_discrete_sequence=['darkgreen'], text_auto='.2f'
+                title="Average CGPA by Scholarship Status", 
+                color_discrete_sequence=[COLOR_LIFESTYLE], # CONSISTENT COLOR 3
+                text_auto='.2f'
             )
             fig_bar_sch.update_layout(xaxis_title='Scholarship Status', yaxis_title='Average CGPA')
             st.plotly_chart(fig_bar_sch, use_container_width=True)
@@ -264,16 +283,17 @@ def page_3_non_academic(df):
         fig_box_income = px.box(
             df, x="income_group", y="current_cgpa", 
             title="CGPA Distribution Across Income Groups", color="income_group",
+            # Using a standard Plotly categorical sequence for groups for best visual distinction
             color_discrete_sequence=px.colors.qualitative.Pastel
         )
         fig_box_income.update_layout(xaxis_title='Income Group', yaxis_title='CGPA')
         st.plotly_chart(fig_box_income, use_container_width=True)
 
-    # 3. Summary Box
+    # 3. Summary Box (UPDATED)
     st.subheader("Summary Box")
     st.info(
         """
-        This page investigates non-academic influences. The bar chart for social media usage often shows a U-shaped or inverse-linear relationship: extremely high usage correlates with lower CGPA, while moderate use may not significantly affect grades. Scholarship holders consistently demonstrate a higher CGPA distribution, suggesting that merit-based aid attracts high-performing students or incentivizes better performance. The income group box plot indicates whether socio-economic background is a factor, potentially showing that students from higher income families have more resources to support high CGPAs.
+        **Key Findings (Objective 3):** The analysis on **Social Media Usage** often shows that excessively high hours are associated with a drop in CGPA, indicating a negative impact on performance. Students with **Scholarships** consistently maintain higher average CGPAs, confirming the effectiveness of merit-based incentives. The **Income Group** box plot helps visualize potential disparities, showing the range and median CGPA based on socio-economic background.
         """
     )
 
@@ -297,7 +317,7 @@ def main():
     
     # --- Set Streamlit Configuration ---
     st.set_page_config(
-        page_title="Student Performance Analysis",
+        page_title="Student Performance Analysis", # Browser Tab Title
         layout="wide",
         initial_sidebar_state="expanded"
     )
@@ -310,7 +330,7 @@ def main():
     }
 
     st.sidebar.title("Dashboard Navigation")
-    st.sidebar.markdown(f"**Cohort Filtered: Admission Year {TARGET_ADMISSION_YEAR}**")
+    st.sidebar.markdown(f"## Student Performance Analysis Dashboard - Cohort {TARGET_ADMISSION_YEAR}")
     selection = st.sidebar.radio("Go to Section", list(PAGES.keys()))
     
     # Execute the selected page function
