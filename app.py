@@ -9,12 +9,13 @@ import plotly.figure_factory as ff
 DATA_FILE = "cleaned_students_performance.csv"
 TARGET_ADMISSION_YEAR = 2021 
 
-# --- Consistent Color Palette for Dashboard Consistency ---
-COLOR_PRIMARY_CGPA = '#1f77b4'  # Blue - Used for General Performance/CGPA
-COLOR_DISCIPLINE = '#2ca02c'    # Green - Used for Study Habits/Attendance
-COLOR_LIFESTYLE = '#9467bd'     # Purple/Violet - Used for Non-Academic/Lifestyle Factors
-COLOR_GENDER_MALE = '#1f77b4'   # Specific Gender Color (Blue)
-COLOR_GENDER_FEMALE = '#ff7f0e' # Specific Gender Color (Orange for contrast)
+# --- Consistent Color Palette for Dashboard Consistency (BOLD and VIBRANT) ---
+# New Bold Palette:
+COLOR_PRIMARY_CGPA = '#00bcd4'  # Cyan/Aqua - Bold for General Performance/CGPA
+COLOR_DISCIPLINE = '#ff5722'    # Deep Orange/Red - Bold for Study Habits/Attendance
+COLOR_LIFESTYLE = '#9c27b0'     # Vibrant Purple - Bold for Non-Academic/Lifestyle Factors
+COLOR_GENDER_MALE = '#2196f3'   # Bright Blue
+COLOR_GENDER_FEMALE = '#e91e63' # Hot Pink/Magenta
 
 # --- UTILITY FUNCTION: DATA LOADING AND CLEANING ---
 
@@ -104,7 +105,7 @@ def page_1_overview(df):
             st.write("**CGPA Distribution**")
             fig_hist = px.histogram(
                 df, x='current_cgpa', nbins=20, title='CGPA Distribution of Students', 
-                color_discrete_sequence=[COLOR_PRIMARY_CGPA] # CONSISTENT COLOR 1
+                color_discrete_sequence=[COLOR_PRIMARY_CGPA] # BOLD COLOR 1
             )
             fig_hist.update_layout(xaxis_title='CGPA', yaxis_title='Frequency')
             st.plotly_chart(fig_hist, use_container_width=True)
@@ -116,7 +117,8 @@ def page_1_overview(df):
             fig_bar_gender = px.bar(
                 avg_cgpa_by_gender, x='gender', y='current_cgpa', title='Average CGPA by Gender',
                 color='gender', 
-                color_discrete_map={'Male': COLOR_GENDER_MALE, 'Female': COLOR_GENDER_FEMALE}, # Specific categorical map
+                # Use new bold colors for gender
+                color_discrete_map={'Male': COLOR_GENDER_MALE, 'Female': COLOR_GENDER_FEMALE}, 
                 text_auto='.2f'
             )
             fig_bar_gender.update_layout(yaxis_title='Average CGPA', xaxis_title='Gender')
@@ -128,7 +130,7 @@ def page_1_overview(df):
         fig_line = px.line(
             avg_sem, x="current_semester", y="current_cgpa", 
             title="Average CGPA Across Semesters", markers=True, 
-            color_discrete_sequence=[COLOR_PRIMARY_CGPA] # CONSISTENT COLOR 1
+            color_discrete_sequence=[COLOR_PRIMARY_CGPA] # BOLD COLOR 1
         )
         fig_line.update_layout(xaxis_title='Semester', yaxis_title='Average CGPA')
             
@@ -181,7 +183,7 @@ def page_2_study_habits(df):
             fig_bar_study = px.bar(
                 avg_cgpa_by_study_hours, x='study_hours_daily', y='current_cgpa', 
                 title='Average CGPA by Daily Study Hours', 
-                color_discrete_sequence=[COLOR_DISCIPLINE], # CONSISTENT COLOR 2
+                color_discrete_sequence=[COLOR_DISCIPLINE], # BOLD COLOR 2
                 text_auto='.2f'
             )
             fig_bar_study.update_layout(xaxis_title='Daily Study Hours', yaxis_title='Average CGPA')
@@ -197,7 +199,7 @@ def page_2_study_habits(df):
                 cgpa_by_attendance, x='attendance_level', y='current_cgpa', 
                 title="Average CGPA by Attendance Level", 
                 category_orders={'attendance_level': order},
-                color_discrete_sequence=[COLOR_DISCIPLINE], # CONSISTENT COLOR 2
+                color_discrete_sequence=[COLOR_DISCIPLINE], # BOLD COLOR 2
                 text_auto='.2f'
             )
             fig_bar_attendance.update_layout(xaxis_title='Attendance Category', yaxis_title='Average CGPA')
@@ -212,7 +214,8 @@ def page_2_study_habits(df):
             corr_matrix, 
             text_auto=True, 
             aspect="auto",
-            color_continuous_scale='Greens', # Consistent scale based on Objective 2 theme
+            # Use a bold, modern gradient for the heatmap
+            color_continuous_scale='Plasma', 
             title="Correlation Matrix of Academic Discipline Factors and CGPA"
         )
         fig_heatmap.update_layout(xaxis={'side': 'bottom'})
@@ -267,7 +270,7 @@ def page_3_non_academic(df):
                 avg_social, x="social_media_category", y="current_cgpa", 
                 title="Average CGPA by Daily Social Media Usage", 
                 category_orders={'social_media_category': ordered_categories},
-                color_discrete_sequence=[COLOR_LIFESTYLE], # CONSISTENT COLOR 3
+                color_discrete_sequence=[COLOR_LIFESTYLE], # BOLD COLOR 3
                 text_auto='.2f'
             )
             fig_bar_social.update_layout(xaxis_title='Hours on Social Media per Day', yaxis_title='Average CGPA')
@@ -280,7 +283,7 @@ def page_3_non_academic(df):
             fig_bar_sch = px.bar(
                 avg_sch, x="meritorious_scholarship", y="current_cgpa", 
                 title="Average CGPA by Scholarship Status", 
-                color_discrete_sequence=[COLOR_LIFESTYLE], # CONSISTENT COLOR 3
+                color_discrete_sequence=[COLOR_LIFESTYLE], # BOLD COLOR 3
                 text_auto='.2f'
             )
             fig_bar_sch.update_layout(xaxis_title='Scholarship Status', yaxis_title='Average CGPA')
@@ -291,8 +294,8 @@ def page_3_non_academic(df):
         fig_box_income = px.box(
             df, x="income_group", y="current_cgpa", 
             title="CGPA Distribution Across Income Groups", color="income_group",
-            # Using a standard Plotly categorical sequence for groups for best visual distinction
-            color_discrete_sequence=px.colors.qualitative.Pastel
+            # Use a bolder Plotly categorical sequence
+            color_discrete_sequence=px.colors.qualitative.Vivid 
         )
         fig_box_income.update_layout(xaxis_title='Income Group', yaxis_title='CGPA')
         st.plotly_chart(fig_box_income, use_container_width=True)
