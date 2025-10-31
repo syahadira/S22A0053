@@ -103,6 +103,7 @@ def page_1_overview(df):
         # 1. CGPA Distribution (Histogram)
         with col1:
             st.write("**CGPA Distribution**")
+            # Keeping this chart as requested (single color)
             fig_hist = px.histogram(
                 df, x='current_cgpa', nbins=20, title='CGPA Distribution of Students', 
                 color_discrete_sequence=[COLOR_PRIMARY_CGPA] # BOLD COLOR 1
@@ -110,14 +111,14 @@ def page_1_overview(df):
             fig_hist.update_layout(xaxis_title='CGPA', yaxis_title='Frequency')
             st.plotly_chart(fig_hist, use_container_width=True)
 
-        # 2. Average CGPA by Gender (Bar Chart)
+        # 2. Average CGPA by Gender (Bar Chart) - Already uses multiple colors
         with col2:
             st.write("**Average CGPA by Gender**")
             avg_cgpa_by_gender = df.groupby('gender', observed=True)['current_cgpa'].mean().reset_index()
             fig_bar_gender = px.bar(
                 avg_cgpa_by_gender, x='gender', y='current_cgpa', title='Average CGPA by Gender',
                 color='gender', 
-                # Use new bold colors for gender
+                # Uses distinct bold colors for Male/Female
                 color_discrete_map={'Male': COLOR_GENDER_MALE, 'Female': COLOR_GENDER_FEMALE}, 
                 text_auto='.2f'
             )
@@ -176,20 +177,21 @@ def page_2_study_habits(df):
         
         col1, col2 = st.columns(2)
 
-        # 1. Average CGPA by Study Hours (Bar Chart)
+        # 1. Average CGPA by Study Hours (Bar Chart) - Now multi-colored
         with col1:
             st.write("**Average CGPA by Daily Study Hours**")
             avg_cgpa_by_study_hours = df.groupby('study_hours_daily', observed=True)['current_cgpa'].mean().reset_index()
             fig_bar_study = px.bar(
                 avg_cgpa_by_study_hours, x='study_hours_daily', y='current_cgpa', 
                 title='Average CGPA by Daily Study Hours', 
-                color_discrete_sequence=[COLOR_DISCIPLINE], # BOLD COLOR 2
+                color='study_hours_daily', # Color based on the category for distinct colors
+                color_discrete_sequence=px.colors.qualitative.Vivid, # Use a bold, multi-color sequence
                 text_auto='.2f'
             )
             fig_bar_study.update_layout(xaxis_title='Daily Study Hours', yaxis_title='Average CGPA')
             st.plotly_chart(fig_bar_study, use_container_width=True)
 
-        # 2. Average CGPA by Attendance Level (Bar Chart)
+        # 2. Average CGPA by Attendance Level (Bar Chart) - Now multi-colored
         with col2:
             st.write("**Average CGPA by Attendance Level**")
             # Ensure correct category order
@@ -199,7 +201,8 @@ def page_2_study_habits(df):
                 cgpa_by_attendance, x='attendance_level', y='current_cgpa', 
                 title="Average CGPA by Attendance Level", 
                 category_orders={'attendance_level': order},
-                color_discrete_sequence=[COLOR_DISCIPLINE], # BOLD COLOR 2
+                color='attendance_level', # Color based on the category for distinct colors
+                color_discrete_sequence=px.colors.qualitative.Vivid, # Use a bold, multi-color sequence
                 text_auto='.2f'
             )
             fig_bar_attendance.update_layout(xaxis_title='Attendance Category', yaxis_title='Average CGPA')
@@ -261,7 +264,7 @@ def page_3_non_academic(df):
 
         col1, col2 = st.columns(2)
 
-        # 1. Average CGPA by Social Media Usage (Bar Chart)
+        # 1. Average CGPA by Social Media Usage (Bar Chart) - Now multi-colored
         with col1:
             st.write("**Average CGPA by Daily Social Media Usage**")
             ordered_categories = ['Very Low (<1h)', 'Low (1-3h)', 'Medium (3-6h)', 'High (>6h)', 'Unknown']
@@ -270,31 +273,33 @@ def page_3_non_academic(df):
                 avg_social, x="social_media_category", y="current_cgpa", 
                 title="Average CGPA by Daily Social Media Usage", 
                 category_orders={'social_media_category': ordered_categories},
-                color_discrete_sequence=[COLOR_LIFESTYLE], # BOLD COLOR 3
+                color="social_media_category", # Color based on the category for distinct colors
+                color_discrete_sequence=px.colors.qualitative.Vivid, # Use a bold, multi-color sequence
                 text_auto='.2f'
             )
             fig_bar_social.update_layout(xaxis_title='Hours on Social Media per Day', yaxis_title='Average CGPA')
             st.plotly_chart(fig_bar_social, use_container_width=True)
 
-        # 2. Average CGPA by Scholarship Status (Bar Chart)
+        # 2. Average CGPA by Scholarship Status (Bar Chart) - Now multi-colored
         with col2:
             st.write("**Average CGPA by Scholarship Status**")
             avg_sch = df.groupby("meritorious_scholarship", observed=True)["current_cgpa"].mean().reset_index()
             fig_bar_sch = px.bar(
                 avg_sch, x="meritorious_scholarship", y="current_cgpa", 
                 title="Average CGPA by Scholarship Status", 
-                color_discrete_sequence=[COLOR_LIFESTYLE], # BOLD COLOR 3
+                color="meritorious_scholarship", # Color based on the category for distinct colors
+                color_discrete_sequence=px.colors.qualitative.Vivid, # Use a bold, multi-color sequence
                 text_auto='.2f'
             )
             fig_bar_sch.update_layout(xaxis_title='Scholarship Status', yaxis_title='Average CGPA')
             st.plotly_chart(fig_bar_sch, use_container_width=True)
 
-        # 3. CGPA Distribution Across Income Groups (Box Plot)
+        # 3. CGPA Distribution Across Income Groups (Box Plot) - Already multi-colored
         st.write("**CGPA Distribution Across Income Groups**")
         fig_box_income = px.box(
             df, x="income_group", y="current_cgpa", 
             title="CGPA Distribution Across Income Groups", color="income_group",
-            # Use a bolder Plotly categorical sequence
+            # This plot already uses a bold, multi-color sequence
             color_discrete_sequence=px.colors.qualitative.Vivid 
         )
         fig_box_income.update_layout(xaxis_title='Income Group', yaxis_title='CGPA')
