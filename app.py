@@ -98,6 +98,7 @@ def page_1_overview(df):
     st.subheader("Visualizations")
     if all(col in df.columns for col in ['current_cgpa', 'gender', 'current_semester']):
         
+        # Charts 1 and 2 (Half-width)
         col1, col2 = st.columns(2)
 
         # 1. CGPA Distribution (Histogram)
@@ -126,16 +127,19 @@ def page_1_overview(df):
             st.plotly_chart(fig_bar_gender, use_container_width=True)
 
         # 3. Average CGPA Across Semesters (Line Plot)
-        st.write("**Average CGPA Across Semesters**")
-        avg_sem = df.groupby("current_semester", observed=True)["current_cgpa"].mean().reset_index()
-        fig_line = px.line(
-            avg_sem, x="current_semester", y="current_cgpa", 
-            title="Average CGPA Across Semesters", markers=True, 
-            color_discrete_sequence=[COLOR_PRIMARY_CGPA] # BOLD COLOR 1
-        )
-        fig_line.update_layout(xaxis_title='Semester', yaxis_title='Average CGPA')
-            
-        st.plotly_chart(fig_line, use_container_width=True)
+        # Wrapping in columns to enforce half-width size consistency
+        col3, _ = st.columns(2)
+        with col3:
+            st.write("**Average CGPA Across Semesters**")
+            avg_sem = df.groupby("current_semester", observed=True)["current_cgpa"].mean().reset_index()
+            fig_line = px.line(
+                avg_sem, x="current_semester", y="current_cgpa", 
+                title="Average CGPA Across Semesters", markers=True, 
+                color_discrete_sequence=[COLOR_PRIMARY_CGPA] # BOLD COLOR 1
+            )
+            fig_line.update_layout(xaxis_title='Semester', yaxis_title='Average CGPA')
+                
+            st.plotly_chart(fig_line, use_container_width=True)
 
     # 3. Summary Box (Simplified English)
     st.subheader("Summary Box")
@@ -175,6 +179,7 @@ def page_2_study_habits(df):
     required_cols = ['study_hours_daily', 'current_cgpa', 'average_class_attendance', 'attendance_level']
     if all(col in df.columns for col in required_cols):
         
+        # Charts 1 and 2 (Half-width)
         col1, col2 = st.columns(2)
 
         # 1. Average CGPA by Study Hours (Bar Chart) - Now multi-colored
@@ -209,20 +214,23 @@ def page_2_study_habits(df):
             st.plotly_chart(fig_bar_attendance, use_container_width=True)
 
         # 3. Correlation Heatmap
-        st.write("**Correlation between Study Hours, Attendance, and CGPA**")
-        corr_data = df[['study_hours_daily', 'average_class_attendance', 'current_cgpa']]
-        corr_matrix = corr_data.corr()
+        # Wrapping in columns to enforce half-width size consistency
+        col3, _ = st.columns(2)
+        with col3:
+            st.write("**Correlation between Study Hours, Attendance, and CGPA**")
+            corr_data = df[['study_hours_daily', 'average_class_attendance', 'current_cgpa']]
+            corr_matrix = corr_data.corr()
 
-        fig_heatmap = px.imshow(
-            corr_matrix, 
-            text_auto=True, 
-            aspect="auto",
-            # Use a bold, modern gradient for the heatmap
-            color_continuous_scale='Plasma', 
-            title="Correlation Matrix of Academic Discipline Factors and CGPA"
-        )
-        fig_heatmap.update_layout(xaxis={'side': 'bottom'})
-        st.plotly_chart(fig_heatmap, use_container_width=True)
+            fig_heatmap = px.imshow(
+                corr_matrix, 
+                text_auto=True, 
+                aspect="auto",
+                # Use a bold, modern gradient for the heatmap
+                color_continuous_scale='Plasma', 
+                title="Correlation Matrix of Academic Discipline Factors and CGPA"
+            )
+            fig_heatmap.update_layout(xaxis={'side': 'bottom'})
+            st.plotly_chart(fig_heatmap, use_container_width=True)
 
     # 3. Summary Box (Simplified English)
     st.subheader("Summary Box")
@@ -262,6 +270,7 @@ def page_3_non_academic(df):
     required_cols = ['social_media_category', 'current_cgpa', 'meritorious_scholarship', 'income_group']
     if all(col in df.columns for col in required_cols):
 
+        # Charts 1 and 2 (Half-width)
         col1, col2 = st.columns(2)
 
         # 1. Average CGPA by Social Media Usage (Bar Chart) - Now multi-colored
@@ -295,15 +304,18 @@ def page_3_non_academic(df):
             st.plotly_chart(fig_bar_sch, use_container_width=True)
 
         # 3. CGPA Distribution Across Income Groups (Box Plot) - Already multi-colored
-        st.write("**CGPA Distribution Across Income Groups**")
-        fig_box_income = px.box(
-            df, x="income_group", y="current_cgpa", 
-            title="CGPA Distribution Across Income Groups", color="income_group",
-            # This plot already uses a bold, multi-color sequence
-            color_discrete_sequence=px.colors.qualitative.Vivid 
-        )
-        fig_box_income.update_layout(xaxis_title='Income Group', yaxis_title='CGPA')
-        st.plotly_chart(fig_box_income, use_container_width=True)
+        # Wrapping in columns to enforce half-width size consistency
+        col3, _ = st.columns(2)
+        with col3:
+            st.write("**CGPA Distribution Across Income Groups**")
+            fig_box_income = px.box(
+                df, x="income_group", y="current_cgpa", 
+                title="CGPA Distribution Across Income Groups", color="income_group",
+                # This plot already uses a bold, multi-color sequence
+                color_discrete_sequence=px.colors.qualitative.Vivid 
+            )
+            fig_box_income.update_layout(xaxis_title='Income Group', yaxis_title='CGPA')
+            st.plotly_chart(fig_box_income, use_container_width=True)
 
     # 3. Summary Box (Simplified English)
     st.subheader("Summary Box")
