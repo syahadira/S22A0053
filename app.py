@@ -89,7 +89,7 @@ def page_1_overview(df):
     st.markdown("---")
     
     # 1. Summary Box (Metric Cards) - MOVED UP
-    st.subheader("Key Metrics Summary")
+    st.subheader("Summary Box")
     
     # Calculate metrics for Objective 1
     avg_cgpa = df['current_cgpa'].mean()
@@ -181,7 +181,7 @@ def page_2_study_habits(df):
     st.markdown("---")
 
     # 1. Summary Box (Metric Cards) - MOVED UP
-    st.subheader("Key Metrics Summary")
+    st.subheader("Summary Box")
 
     # Calculate metrics for Objective 2
     avg_study_hours = df['study_hours_daily'].mean()
@@ -288,7 +288,7 @@ def page_3_non_academic(df):
     st.markdown("---")
 
     # 1. Summary Box (Metric Cards) - MOVED UP
-    st.subheader("Key Metrics Summary")
+    st.subheader("Summary Box")
 
     # Calculate metrics for Objective 3
     scholarship_cgpa = df[df['meritorious_scholarship'] == 'Yes']['current_cgpa'].mean()
