@@ -141,13 +141,25 @@ def page_1_overview(df):
                 
             st.plotly_chart(fig_line, use_container_width=True)
 
-    # 3. Summary Box (Simplified English)
-    st.subheader("Summary Box")
-    st.info(
-        """
-        **Key Findings (Objective 1):** The **CGPA distribution** shows that most students have grades close to the average. The **Average CGPA by Gender** often shows small differences between male and female students. The **CGPA Across Semesters** is generally stable, meaning the difficulty level hasn't changed much over the years. This gives us a basic look at the students' academic status.
-        """
-    )
+    # 3. Summary Box (Metric Cards) - UPDATED TO USE METRICS
+    st.subheader("Key Performance Metrics")
+    
+    # Calculate metrics for Objective 1
+    avg_cgpa = df['current_cgpa'].mean()
+    avg_semester = df['current_semester'].mean()
+    male_avg_cgpa = df[df['gender'] == 'Male']['current_cgpa'].mean()
+    female_avg_cgpa = df[df['gender'] == 'Female']['current_cgpa'].mean()
+
+    col1, col2, col3, col4 = st.columns(4)
+    
+    col1.metric(label="Overall Avg CGPA", value=f"{avg_cgpa:.2f}", 
+                help="Average CGPA for the entire 2021 cohort.", border=True)
+    col2.metric(label="Avg Current Semester", value=f"{avg_semester:.1f}", 
+                help="Average semester level of students in the cohort.", border=True)
+    col3.metric(label="Male Avg CGPA", value=f"{male_avg_cgpa:.2f}", 
+                help="Average CGPA specifically for Male students.", border=True)
+    col4.metric(label="Female Avg CGPA", value=f"{female_avg_cgpa:.2f}", 
+                help="Average CGPA specifically for Female students.", border=True)
     
     # 4. Interpretation/Discussion (Simplified English - Broken down by chart)
     st.subheader("Interpretation/Discussion")
@@ -232,13 +244,29 @@ def page_2_study_habits(df):
             fig_heatmap.update_layout(xaxis={'side': 'bottom'})
             st.plotly_chart(fig_heatmap, use_container_width=True)
 
-    # 3. Summary Box (Simplified English)
-    st.subheader("Summary Box")
-    st.info(
-        """
-        **Key Findings (Objective 2):** Both **Daily Study Hours** and **Class Attendance** clearly show a link to better grades. The charts tell us that students who attend class more often and study more hours get higher average CGPAs. The **Correlation Heatmap** confirms that these two factors are strong predictors, meaning they are very important for academic success.
-        """
-    )
+    # 3. Summary Box (Metric Cards) - UPDATED TO USE METRICS
+    st.subheader("Key Discipline-Performance Metrics")
+
+    # Calculate metrics for Objective 2
+    avg_study_hours = df['study_hours_daily'].mean()
+    avg_attendance = df['average_class_attendance'].mean()
+    # Calculate CGPA for High Attendance, handling potential missing group
+    high_attendance_cgpa = df[df['attendance_level'] == 'High Attendance']['current_cgpa'].mean()
+    if pd.isna(high_attendance_cgpa): high_attendance_cgpa = 0.0
+    
+    # Correlation between study_hours_daily and current_cgpa
+    study_cgpa_corr = df[['study_hours_daily', 'current_cgpa']].corr().iloc[0, 1]
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    col1.metric(label="Avg Daily Study Hrs", value=f"{avg_study_hours:.1f} hrs", 
+                help="Average daily hours spent studying.", border=True)
+    col2.metric(label="Avg Class Attendance", value=f"{avg_attendance:.1f}%", 
+                help="Overall average percentage of class attendance.", border=True)
+    col3.metric(label="CGPA (High Attendance)", value=f"{high_attendance_cgpa:.2f}", 
+                help="Average CGPA for students with High Attendance (80%+).", border=True)
+    col4.metric(label="Study/CGPA Correlation", value=f"{study_cgpa_corr:.2f}", 
+                help="Correlation coefficient between daily study hours and CGPA.", border=True)
     
     # 4. Interpretation/Discussion (Simplified English - Broken down by chart)
     st.subheader("Interpretation/Discussion")
@@ -317,13 +345,35 @@ def page_3_non_academic(df):
             fig_box_income.update_layout(xaxis_title='Income Group', yaxis_title='CGPA')
             st.plotly_chart(fig_box_income, use_container_width=True)
 
-    # 3. Summary Box (Simplified English)
-    st.subheader("Summary Box")
-    st.info(
-        """
-        **Key Findings (Objective 3):** The data suggests that spending **too many hours on social media** might lower a student's CGPA. Students who have **Scholarships** almost always have higher average grades. The **Income Group** chart shows how grades are spread out across different family income levels, helping us see if financial background plays a role.
-        """
-    )
+    # 3. Summary Box (Metric Cards) - UPDATED TO USE METRICS
+    st.subheader("Key Lifestyle-Performance Metrics")
+
+    # Calculate metrics for Objective 3
+    scholarship_cgpa = df[df['meritorious_scholarship'] == 'Yes']['current_cgpa'].mean()
+    
+    # Calculate CGPA for High Social Media Use, handling potential missing group
+    high_social_media_cgpa = df[df['social_media_category'] == 'High (>6h)']['current_cgpa'].mean()
+    if pd.isna(high_social_media_cgpa): high_social_media_cgpa = 0.0
+
+    # Calculate mode for Income Group
+    most_freq_income = df['income_group'].mode()[0] if not df['income_group'].empty else "N/A"
+    
+    # Calculate percentage with health issues (using the column name from data)
+    health_issues_percent = 0
+    if 'Do you have any health issues?' in df.columns:
+        health_issues_percent = (df['Do you have any health issues?'].str.contains('Yes', case=False, na=False).sum() / len(df)) * 100
+        
+    col1, col2, col3, col4 = st.columns(4)
+
+    col1.metric(label="CGPA (Scholarship)", value=f"{scholarship_cgpa:.2f}", 
+                help="Average CGPA for students with a meritorious scholarship.", border=True)
+    col2.metric(label="CGPA (High Social Media)", value=f"{high_social_media_cgpa:.2f}", 
+                help="Average CGPA for students spending >6 hours on social media.", border=True)
+    col3.metric(label="Most Frequent Income", value=f"{most_freq_income}", 
+                help="The most common monthly family income group.", border=True)
+    col4.metric(label="% With Health Issues", value=f"{health_issues_percent:.1f}%", 
+                help="Percentage of students reporting a health issue.", border=True)
+
 
     # 4. Interpretation/Discussion (Simplified English - Broken down by chart)
     st.subheader("Interpretation/Discussion")
