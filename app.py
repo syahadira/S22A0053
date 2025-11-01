@@ -101,7 +101,8 @@ def page_1_overview(df):
     
     col1.metric(label="Overall Avg CGPA", value=f"{avg_cgpa:.2f}", 
                 help="Average CGPA for the entire 2021 cohort.", border=True)
-    col2.metric(label="Avg Current Semester", value=f"{avg_semester:.1f}", 
+    # MODIFICATION: Changed format from :.1f to :.0f to display as a whole number.
+    col2.metric(label="Avg Current Semester", value=f"{avg_semester:.0f}", 
                 help="Average semester level of students in the cohort.", border=True)
     col3.metric(label="Male Avg CGPA", value=f"{male_avg_cgpa:.2f}", 
                 help="Average CGPA specifically for Male students.", border=True)
